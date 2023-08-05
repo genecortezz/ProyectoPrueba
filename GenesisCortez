@@ -1,0 +1,136 @@
+filas = 4
+columnas = 4
+tablero = [[" " for _ in range(columnas)] for _ in range(filas)]
+clientes = []
+
+def mostrar_tablero():
+    print("Tablero de Lotes:")
+    for fila in tablero:
+        for terreno in fila:
+            print(f"[{terreno}]", end=" ")
+        print()
+
+def ver_disponibilidad():
+    mostrar_tablero()
+
+    fila = int(input("Ingrese el número de fila (1-4): ")) - 1
+    columna = int(input("Ingrese el número de columna (1-4): ")) - 1
+
+    if tablero[fila][columna] == " ":
+        numero_lote = (fila * columnas) + columna + 1
+        print(f"Lote {numero_lote} seleccionado.")
+        comprar_terreno(numero_lote)
+    else:
+        print("Lote seleccionado no está disponible.")
+
+def comprar_terreno(numero_lote):
+    rut = input("Ingrese su rut: ")
+    cliente = input("Ingrese su nombre completo: ")
+    telefono = input("Ingrese su número de teléfono: ")
+    email = input("Ingrese su email: ")
+    clientes.append(cliente)
+    fila = (numero_lote - 1) // columnas
+    columna = (numero_lote - 1) % columnas
+    tablero[fila][columna] = "X"
+    tamaño_terreno, precio_terreno = calcular_tamaño_y_precio_terreno(fila, columna)
+
+    print(f"Lote {numero_lote} comprado por {cliente}")
+    print(f"Tamaño del terreno: {tamaño_terreno} m2")
+    print(f"Precio del terreno: ${precio_terreno}")
+
+def ver_detalle():
+    print("\nInformación de Lotes:")
+    for i, cliente in enumerate(clientes):
+        numero_lote = i + 1
+        fila = (numero_lote - 1) // columnas
+        columna = (numero_lote - 1) % columnas
+        tamaño_terreno = calcular_tamaño_terreno(fila, columna)
+        print(f"Lote {numero_lote}: Tamaño: {tamaño_terreno}, Cliente: {cliente}, Precio: {precio}")
+
+def calcular_tamaño_terreno(fila, columna):
+    tamaños = [
+        [200, 150, 200, 150],
+        [150, 100, 150, 100],
+        [200, 150, 200, 150],
+        [150, 100, 150, 100]
+    ]
+    tamaño = tamaños[fila][columna]
+    precio_por_metro_cuadrado = 1000
+    precio_terreno = tamaño * precio_por_metro_cuadrado
+    return tamaño, precio_terreno
+
+while True:
+    print("\n====== Menú ======\n"
+          "1. Ver disponibilidad\n"
+          "2. Seleccionar un lote\n"
+          "3. Ver detalle de clientes\n"
+          "4. Salir\n")
+
+    opcion = input("Seleccione una opción: ")
+
+    if opcion == "1" or opcion == "2":
+        ver_disponibilidad()
+    elif opcion == "3":
+        ver_disponibilidad()
+    elif opcion == "4":
+        print("¡Hasta luego!")
+        break
+    else:
+        print("Opción inválida. Inténtelo de nuevo.")
+
+
+class Terreno:
+    def __init__(self, numero_lote, area, precio, estado):
+        self.numero_lote = numero_lote
+        self.area = area
+        self.precio = precio
+        self.estado = estado  # Puede ser "Disponible" o "Vendido"
+
+class Loteo:
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.terrenos_disponibles = []
+
+    def agregar_terreno(self, terreno):
+        self.terrenos_disponibles.append(terreno)
+
+    def mostrar_terrenos_disponibles(self):
+        if not self.terrenos_disponibles:
+            print("No hay terrenos disponibles en el loteo.")
+        else:
+            print("Terrenos disponibles en el loteo:")
+            for terreno in self.terrenos_disponibles:
+                print(f"Número de lote: {terreno.numero_lote}")
+                print(f"Área: {terreno.area} m²")
+                print(f"Precio: ${terreno.precio}")
+                print(f"Estado: {terreno.estado}")
+                print("--------------")
+
+    def vender_terreno(self, numero_lote):
+        for terreno in self.terrenos_disponibles:
+            if terreno.numero_lote == numero_lote:
+                terreno.estado = "Vendido"
+                self.terrenos_disponibles.remove(terreno)
+                print(f"Terreno número {numero_lote} vendido exitosamente.")
+                return
+        print(f"No se encontró el terreno número {numero_lote}.")
+
+# Ejemplo de uso del programa
+
+# Crear un loteo
+loteo1 = Loteo("Loteo Ejemplo")
+
+# Agregar terrenos disponibles
+terreno1 = Terreno(1, 500, 10000000, "Disponible")
+terreno2 = Terreno(2, 700, 15000000, "Disponible")
+loteo1.agregar_terreno(terreno1)
+loteo1.agregar_terreno(terreno2)
+
+# Mostrar terrenos disponibles
+loteo1.mostrar_terrenos_disponibles()
+
+# Vender un terreno
+loteo1.vender_terreno(1)
+
+# Mostrar terrenos disponibles después de la venta
+loteo1.mostrar_terrenos_disponibles()
